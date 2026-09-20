@@ -9,6 +9,9 @@ export interface AdminProps {
   password: string;
   city: string;
   cep: number;
+  street: string;
+  state: string;
+  number: number;
   cellphone: number;
   cpf: number;
 }
@@ -30,6 +33,15 @@ export class Admin extends Entity<AdminProps> {
   }
   get city() {
     return this.props.city;
+  }
+  get street() {
+    return this.props.street;
+  }
+  get state() {
+    return this.props.state;
+  }
+  get number() {
+    return this.props.number;
   }
   get cep() {
     return this.props.cep;
@@ -59,8 +71,20 @@ export class Admin extends Entity<AdminProps> {
   set cep(cep: number) {
     this.props.cep = cep;
   }
+  set street(street: string) {
+    this.props.street = street;
+  }
+  set state(state: string) {
+    this.props.state = state;
+  }
+  set number(number: number) {
+    this.props.number = number;
+  }
   set cellphone(cellphone: number) {
     this.props.cellphone = cellphone;
+  }
+  set gymId(gymId: string) {
+    this.props.gymId = gymId;
   }
   set cpf(cpf: number) {
     this.props.cpf = cpf;
