@@ -3,6 +3,7 @@ import type { UniqueEntityID } from "@/core/entity/unique-entityId";
 
 export interface GymProps {
   adminId: string;
+  gymName: string;
   urlImage: string;
   street: string;
   state: string;
@@ -32,6 +33,13 @@ export class Gym extends Entity<GymProps> {
   get cep() {
     return this.props.cep;
   }
+  get gymName() {
+    return this.props.gymName;
+  }
+
+  set gymName(gymName: string) {
+    this.props.gymName = gymName;
+  }
 
   set adminId(adminId: string) {
     this.props.adminId = adminId;
@@ -54,6 +62,7 @@ export class Gym extends Entity<GymProps> {
   set cep(cep: number) {
     this.props.cep = cep;
   }
+
   static create(props: GymProps, id?: UniqueEntityID) {
     const gym = new Gym(props, id);
     return gym;
