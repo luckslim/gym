@@ -4,6 +4,7 @@ import type { UniqueEntityID } from "@/core/entity/unique-entityId";
 export interface ClientProps {
   gymId: string;
   urlImage: string;
+  status: string;
   name: string;
   email: string;
   password: string;
@@ -11,6 +12,7 @@ export interface ClientProps {
   cep: number;
   cellphone: number;
   cpf: number;
+  dateOfCreation: Date;
 }
 export class Client extends Entity<ClientProps> {
   get gymId() {
@@ -19,6 +21,13 @@ export class Client extends Entity<ClientProps> {
   get name() {
     return this.props.name;
   }
+  get status() {
+    return this.props.status;
+  }
+  get dateOfCreation() {
+    return this.props.dateOfCreation;
+  }
+
   get email() {
     return this.props.email;
   }
@@ -43,6 +52,12 @@ export class Client extends Entity<ClientProps> {
 
   set name(name: string) {
     this.props.name = name;
+  }
+  set dateOfCreation(dateOfCreation: Date) {
+    this.props.dateOfCreation = dateOfCreation;
+  }
+  set status(status: string) {
+    this.props.status = status;
   }
   set email(email: string) {
     this.props.email = email;

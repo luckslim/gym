@@ -4,7 +4,7 @@ import type { UniqueEntityID } from "@/core/entity/unique-entityId";
 export interface PlanProps {
   userId: string;
   planName: string;
-  exerciseIds: string[];    
+  exerciseIds: string[];
 }
 export class Plan extends Entity<PlanProps> {
   get userId() {

@@ -13,7 +13,6 @@ export interface EmployedProps {
   cpf: number;
 }
 export class Employed extends Entity<EmployedProps> {
-  
   get gymId() {
     return this.props.gymId;
   }
