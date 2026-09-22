@@ -47,7 +47,7 @@ export class CreateAdminUseCase {
     cpf,
     state,
     street,
-    number
+    number,
   }: CreateAdminRequest): Promise<CreateAdminResponse> {
     const creator = await this.creatorRepository.fyndById(Id);
     if (!creator) {

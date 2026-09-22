@@ -15,10 +15,7 @@ interface EditAdminRequest {
   cpf: number;
 }
 
-type EditAdminResponse = Either<
-  NotAllowedError,
-  { message: string }
->;
+type EditAdminResponse = Either<NotAllowedError, { message: string }>;
 
 export class EditAdminUseCase {
   constructor(
@@ -42,20 +39,22 @@ export class EditAdminUseCase {
       return left(new NotAllowedError("Admin not found"));
     }
 
-    if(admin.id.toString() != Id){
-      return left(new NotAllowedError("You are not allowed to edit this admin"));
+    if (admin.id.toString() != Id) {
+      return left(
+        new NotAllowedError("You are not allowed to edit this admin"),
+      );
     }
 
     const passwordHashed = await this.hashGenerator.hash(password);
-    
-    admin.name = name;    
+
+    admin.name = name;
     admin.email = email;
     admin.password = passwordHashed;
     admin.city = city;
     admin.cep = cep;
     admin.cellphone = cellphone;
     admin.cpf = cpf;
-    admin.urlImage = urlImage;   
+    admin.urlImage = urlImage;
 
     await this.adminRepository.save(admin);
 

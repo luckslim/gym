@@ -12,7 +12,7 @@ export class Exercise extends Entity<ExerciseProps> {
   get exerciseUrl() {
     return this.props.exerciseUrl;
   }
-  
+
   set exerciseName(exerciseName: string) {
     this.props.exerciseName = exerciseName;
   }

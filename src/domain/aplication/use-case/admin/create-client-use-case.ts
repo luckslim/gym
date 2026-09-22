@@ -5,7 +5,7 @@ import type { clientRepository } from "../../repository/user-repository";
 import type { adminRepository } from "../../repository/admin-repository";
 import type { HashGenerator } from "../../cryptography/hash-generator";
 import { NotFoundError } from "@/core/error/not-found-error";
-import { Client } from "@/domain/enterprise/user-entity";
+import { Client } from "@/domain/enterprise/client-entity";
 
 interface CreateClientRequest {
   Id: string;
@@ -47,15 +47,19 @@ export class CreateClientUseCase {
 
     const client = Client.create({
       gymId: admin.gymId,
-      urlImage:'undefined',
+      urlImage: "undefined",
       name,
       email,
       password,
+      status: 'pending for payment',
       city,
       cep,
       cellphone,
       cpf,
+      dateOfCreation: new Date(),
     });
+
+    await this.clientRepository.create(client)
 
     return right({ message: "Client created successfully" });
   }
