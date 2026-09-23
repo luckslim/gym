@@ -7,7 +7,10 @@ export interface clientRepository {
   findById(id: string): Promise<Client | null>;
   findByIds(ids: string[]): Promise<Client[] | null>;
   findByIdsContraries(ids: string[]): Promise<Client[] | null>;
-  clientPayStatus(client: Client[] | null):Promise<Client[] | null>
+  clientPayStatus(
+    client: Client[] | null,
+    status: string,
+  ): Promise<Client[] | null>;
   findManyByGymIdWithParams(
     gymId?: string,
     page?: number,

@@ -1,10 +1,10 @@
 import { NotAllowedError } from "@/core/error/not-allowed-error";
-import type { HashGenerator } from "../../cryptography/hash-generator";
-import type { gymRepository } from "../../repository/gym-repository";
+import type { HashGenerator } from "../../../cryptography/hash-generator";
+import type { gymRepository } from "../../../repository/gym-repository";
 import { left, right, type Either } from "@/core/either";
-import type { adminRepository } from "../../repository/admin-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
 import type { NotFoundError } from "@/core/error/not-found-error";
-import type { Uploader } from "../../storage/uploader";
+import type { Uploader } from "../../../storage/uploader";
 import { Upload } from "@/domain/enterprise/upload-entity";
 import { randomUUID } from "node:crypto";
 

@@ -1,11 +1,11 @@
 import { left, right, type Either } from "@/core/either";
 import { EmailAlreadyExistError } from "@/core/error/email-already-exist-error";
-import type { gymRepository } from "../../repository/gym-repository";
-import type { HashGenerator } from "../../cryptography/hash-generator";
+import type { gymRepository } from "../../../repository/gym-repository";
+import type { HashGenerator } from "../../../cryptography/hash-generator";
 
 import { NotAllowedError } from "@/core/error/not-allowed-error";
 import { Gym } from "@/domain/enterprise/gym-entity";
-import type { adminRepository } from "../../repository/admin-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
 
 interface CreateGymRequest {
   Id: string;

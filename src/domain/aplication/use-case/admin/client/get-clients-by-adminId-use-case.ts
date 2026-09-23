@@ -1,9 +1,9 @@
 import { left, right, type Either } from "@/core/either";
-import type { adminRepository } from "../../repository/admin-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
 import { NotFoundError } from "@/core/error/not-found-error";
 import { Client } from "@/domain/enterprise/client-entity";
-import type { clientRepository } from "../../repository/user-repository";
-import type { paymentHistoryRepository } from "../../repository/payment-history-repository";
+import type { clientRepository } from "../../../repository/user-repository";
+import type { paymentHistoryRepository } from "../../../repository/payment-history-repository";
 
 interface GetClientRequest {
   Id: string;
@@ -42,7 +42,7 @@ export class GetClientUseCase {
     //return payments doned
     const payDoneForClients =
       await this.paymentHistoryRepository.findClientsByGymIdAndDate(
-        admin.gymId,
+        admin.id.toString(),
         dateInitial,
         dateFinal,
       );
@@ -55,18 +55,22 @@ export class GetClientUseCase {
 
     //return clients that payed
     const clientPayed = await this.clientRepository.findByIds(data);
-    
+
     //mutate status from client
-    const clientPayedStatus =
-      await this.clientRepository.clientPayStatus(clientPayed);
+    const clientPayedStatus = await this.clientRepository.clientPayStatus(
+      clientPayed,
+      "paid",
+    );
 
     //return clients that not payed
     const clientNotPayed =
       await this.clientRepository.findByIdsContraries(data);
 
     //mutate status from client
-    const clientNotPayedStatus =
-      await this.clientRepository.clientPayStatus(clientNotPayed);
+    const clientNotPayedStatus = await this.clientRepository.clientPayStatus(
+      clientNotPayed,
+      "not-paid",
+    );
 
     return right({ clientPayedStatus, clientNotPayedStatus });
   }
