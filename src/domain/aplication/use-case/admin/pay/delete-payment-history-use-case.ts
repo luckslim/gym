@@ -1,6 +1,6 @@
 import { left, right, type Either } from "@/core/either";
-import type { adminRepository } from "../../repository/admin-repository";
-import type { paymentHistoryRepository } from "../../repository/payment-history-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
+import type { paymentHistoryRepository } from "../../../repository/payment-history-repository";
 import { NotFoundError } from "@/core/error/not-found-error";
 import { NotAllowedError } from "@/core/error/not-allowed-error";
 
@@ -35,9 +35,11 @@ export class DeletePaymentHistoryUseCase {
       return left(new NotFoundError("Id from pay not found!"));
     }
 
-    if(pay.adminId != admin.id.toString()){
-      return left(new NotAllowedError("Id from pay and admin not allowed"))
+    if (pay.adminId != admin.id.toString()) {
+      return left(new NotAllowedError("Id from pay and admin not allowed"));
     }
+
+    await this.paymentHistoryRepository.delete(pay.id.toString());
 
     return right({ message: "PaymentHistory Deleted" });
   }

@@ -1,10 +1,10 @@
 import { left, right, type Either } from "@/core/either";
-import type { adminRepository } from "../../repository/admin-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
 import { NotFoundError } from "@/core/error/not-found-error";
 import type { Client } from "@/domain/enterprise/client-entity";
-import type { clientRepository } from "../../repository/user-repository";
+import type { clientRepository } from "../../../repository/user-repository";
 import { NotAllowedError } from "@/core/error/not-allowed-error";
-import type { gymRepository } from "../../repository/gym-repository";
+import type { gymRepository } from "../../../repository/gym-repository";
 
 interface GetClientByNameRequest {
   Id: string;

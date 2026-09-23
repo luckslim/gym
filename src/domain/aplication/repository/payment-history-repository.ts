@@ -2,7 +2,7 @@ import type { PaymentHistory } from "@/domain/enterprise/payment-history-entity"
 
 export interface paymentHistoryRepository {
   create(paymenthistory: PaymentHistory): Promise<PaymentHistory>;
-  findById(Id: string): Promise<PaymentHistory>;
+  findById(Id: string): Promise<PaymentHistory | null>;
   findClientsByGymIdAndDate(
     gymId: string,
     dateInitial: Date,

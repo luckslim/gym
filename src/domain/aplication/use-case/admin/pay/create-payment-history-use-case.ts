@@ -1,10 +1,10 @@
 import { left, right, type Either } from "@/core/either";
-import type { adminRepository } from "../../repository/admin-repository";
-import type { paymentHistoryRepository } from "../../repository/payment-history-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
+import type { paymentHistoryRepository } from "../../../repository/payment-history-repository";
 import { PaymentHistory } from "@/domain/enterprise/payment-history-entity";
 import { NotFoundError } from "@/core/error/not-found-error";
-import type { clientRepository } from "../../repository/user-repository";
-import type { gymRepository } from "../../repository/gym-repository";
+import type { clientRepository } from "../../../repository/user-repository";
+import type { gymRepository } from "../../../repository/gym-repository";
 import { NotAllowedError } from "@/core/error/not-allowed-error";
 
 interface CreatePaymentHistoryRequest {
@@ -68,7 +68,7 @@ export class CreatePaymentHistoryUseCase {
 
     client.status = "Disponible";
 
-    await this.clientRepository.save(client)
+    await this.clientRepository.save(client);
 
     return right({ message: "PaymentHistory Created" });
   }

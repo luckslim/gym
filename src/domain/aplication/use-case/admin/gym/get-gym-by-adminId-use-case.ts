@@ -1,7 +1,7 @@
 import { left, right, type Either } from "@/core/either";
-import type { adminRepository } from "../../repository/admin-repository";
+import type { adminRepository } from "../../../repository/admin-repository";
 import { NotFoundError } from "@/core/error/not-found-error";
-import type { gymRepository } from "../../repository/gym-repository";
+import type { gymRepository } from "../../../repository/gym-repository";
 import type { Gym } from "@/domain/enterprise/gym-entity";
 
 interface GetGymRequest {
