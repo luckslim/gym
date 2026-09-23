@@ -9,35 +9,27 @@ import { InMemoryGymRepository } from "../../../../../../test/in-memory-reposito
 import { InMemoryPaymentHistoryRepository } from "../../../../../../test/in-memory-repository/in-memory-payment-history-repository";
 import { CreatePaymentHistoryUseCase } from "./create-payment-history-use-case";
 
-function makeSut() {
-  const paymentHistoryRepository = new InMemoryPaymentHistoryRepository();
-  const clientRepository = new InMemoryClientRepository();
-  const adminRepository = new InMemoryAdminRepository();
-  const gymRepository = new InMemoryGymRepository();
-  const sut = new CreatePaymentHistoryUseCase(
-    paymentHistoryRepository,
-    clientRepository,
-    adminRepository,
-    gymRepository,
-  );
-  return {
-    sut,
-    paymentHistoryRepository,
-    clientRepository,
-    adminRepository,
-    gymRepository,
-  };
-}
+let paymentHistoryRepository: InMemoryPaymentHistoryRepository;
+let clientRepository: InMemoryClientRepository;
+let adminRepository: InMemoryAdminRepository;
+let gymRepository: InMemoryGymRepository;
+let sut: CreatePaymentHistoryUseCase;
 
 describe("Create payment history", () => {
-  it("deve registrar o pagamento e liberar o cliente", async () => {
-    const {
-      sut,
+  beforeEach(() => {
+    paymentHistoryRepository = new InMemoryPaymentHistoryRepository();
+    clientRepository = new InMemoryClientRepository();
+    adminRepository = new InMemoryAdminRepository();
+    gymRepository = new InMemoryGymRepository();
+    sut = new CreatePaymentHistoryUseCase(
       paymentHistoryRepository,
       clientRepository,
       adminRepository,
       gymRepository,
-    } = makeSut();
+    );
+  });
+
+  it("deve registrar o pagamento e liberar o cliente", async () => {
     const admin = MakeAdmin({ gymId: "gym-placeholder" });
     const gym = MakeGym({ adminId: admin.id.toString() });
     const client = MakeClient({
@@ -70,7 +62,6 @@ describe("Create payment history", () => {
   });
 
   it("deve rejeitar admin inexistente", async () => {
-    const { sut, paymentHistoryRepository } = makeSut();
     const result = await sut.execute({
       Id: "admin-inexistente",
       userId: "client-01",
@@ -84,13 +75,6 @@ describe("Create payment history", () => {
   });
 
   it("deve rejeitar cliente de outra academia", async () => {
-    const {
-      sut,
-      clientRepository,
-      adminRepository,
-      gymRepository,
-      paymentHistoryRepository,
-    } = makeSut();
     const admin = MakeAdmin({ gymId: "gym-placeholder" });
     const gym = MakeGym({ adminId: admin.id.toString() });
     const client = MakeClient({ gymId: "outra-academia" });
@@ -112,7 +96,6 @@ describe("Create payment history", () => {
   });
 
   it("deve rejeitar quando a academia do admin não existe", async () => {
-    const { sut, adminRepository } = makeSut();
     const admin = MakeAdmin({ gymId: "gym-inexistente" });
     await adminRepository.create(admin);
     const result = await sut.execute({

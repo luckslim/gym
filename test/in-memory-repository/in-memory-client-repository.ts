@@ -1,9 +1,59 @@
-import type { clientRepository } from "@/domain/aplication/repository/user-repository";
+import type {
+  clientRepository,
+  FindClientsWithPaymentStatusParams,
+  PaginatedClients,
+} from "@/domain/aplication/repository/user-repository";
 import type { Client } from "@/domain/enterprise/client-entity";
+import type { PaymentHistory } from "@/domain/enterprise/payment-history-entity";
 
 export class InMemoryClientRepository implements clientRepository {
   public items: Client[] = [];
+  public paymentHistoryItems: PaymentHistory[] = [];
 
+  async findClientsWithPaymentStatus(
+    params: FindClientsWithPaymentStatusParams,
+  ): Promise<Client[]> {
+    const paidClientIds = new Set(
+      this.paymentHistoryItems
+        .filter(
+          (payment) =>
+            payment.adminId === params.gymId &&
+            payment.date >= params.dateInitial &&
+            payment.date <= params.dateFinal,
+        )
+        .map((payment) => payment.userId),
+    );
+
+    const filtered = this.items.filter((client) => {
+      const isPaid = paidClientIds.has(client.id.toString());
+      return (
+        client.gymId === params.gymId &&
+        (params.status === undefined ||
+          (params.status === "paid" ? isPaid : !isPaid)) &&
+        (params.name === undefined ||
+          client.name.toLowerCase().includes(params.name.toLowerCase())) &&
+        (params.email === undefined ||
+          client.email.toLowerCase().includes(params.email.toLowerCase())) &&
+        (params.city === undefined ||
+          client.city.toLowerCase().includes(params.city.toLowerCase())) &&
+        (params.cep === undefined || client.cep === params.cep) &&
+        (params.cellphone === undefined ||
+          client.cellphone === params.cellphone) &&
+        (params.cpf === undefined || client.cpf === params.cpf)
+      );
+    });
+
+    const start = (params.page - 1) * params.perPage;
+    const clients = filtered
+      .slice(start, start + params.perPage)
+      .map((client) => {
+        const isPaid = paidClientIds.has(client.id.toString());
+        client.status = isPaid ? "paid" : "not-paid";
+        return client;
+      });
+
+    return clients;
+  }
   async create(client: Client): Promise<Client> {
     this.items.push(client);
     return client;

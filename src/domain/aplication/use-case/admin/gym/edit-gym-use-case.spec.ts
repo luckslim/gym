@@ -19,23 +19,32 @@ class InMemoryUploader {
   }
 }
 
+let adminRepository: InMemoryAdminRepository;
+let gymRepository: InMemoryGymRepository;
+let uploader: InMemoryUploader;
+let hashGenerator: FakeHashGenerator;
+let sut: EditGymUseCase;
+
 describe("Edit gym", () => {
+  beforeEach(() => {
+    adminRepository = new InMemoryAdminRepository();
+    gymRepository = new InMemoryGymRepository();
+    uploader = new InMemoryUploader();
+    hashGenerator = new FakeHashGenerator();
+    sut = new EditGymUseCase(
+      gymRepository,
+      uploader,
+      adminRepository,
+      hashGenerator,
+    );
+  });
+
   it("deve atualizar a academia e enviar a nova imagem", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const gymRepository = new InMemoryGymRepository();
-    const uploader = new InMemoryUploader();
     const admin = MakeAdmin({ gymId: "gym-placeholder" });
     const gym = MakeGym({ adminId: admin.id.toString() });
     admin.gymId = gym.id.toString();
     await adminRepository.create(admin);
     await gymRepository.create(gym);
-    const sut = new EditGymUseCase(
-      gymRepository,
-      uploader,
-      adminRepository,
-      new FakeHashGenerator(),
-    );
-
     const result = await sut.execute({
       Id: admin.id.toString(),
       urlImage: "updated.png",
@@ -69,17 +78,8 @@ describe("Edit gym", () => {
   });
 
   it("deve rejeitar academia que não pertence ao admin", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const gymRepository = new InMemoryGymRepository();
-    const uploader = new InMemoryUploader();
     const admin = MakeAdmin({ gymId: "gym-inexistente" });
     await adminRepository.create(admin);
-    const sut = new EditGymUseCase(
-      gymRepository,
-      uploader,
-      adminRepository,
-      new FakeHashGenerator(),
-    );
     const result = await sut.execute({
       Id: admin.id.toString(),
       urlImage: "image.png",

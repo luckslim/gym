@@ -6,19 +6,25 @@ import { InMemoryAdminRepository } from "../../../../../../test/in-memory-reposi
 import { InMemoryPaymentHistoryRepository } from "../../../../../../test/in-memory-repository/in-memory-payment-history-repository";
 import { DeletePaymentHistoryUseCase } from "./delete-payment-history-use-case";
 
+let adminRepository: InMemoryAdminRepository;
+let paymentHistoryRepository: InMemoryPaymentHistoryRepository;
+let sut: DeletePaymentHistoryUseCase;
+
 describe("Delete payment history", () => {
+  beforeEach(() => {
+    adminRepository = new InMemoryAdminRepository();
+    paymentHistoryRepository = new InMemoryPaymentHistoryRepository();
+    sut = new DeletePaymentHistoryUseCase(
+      paymentHistoryRepository,
+      adminRepository,
+    );
+  });
+
   it("deve excluir um pagamento pertencente ao admin", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const paymentHistoryRepository = new InMemoryPaymentHistoryRepository();
     const admin = MakeAdmin({ gymId: "gym-01" });
     const payment = MakePaymentHistory({ adminId: admin.id.toString() });
     await adminRepository.create(admin);
     await paymentHistoryRepository.create(payment);
-    const sut = new DeletePaymentHistoryUseCase(
-      paymentHistoryRepository,
-      adminRepository,
-    );
-
     const result = await sut.execute({
       Id: admin.id.toString(),
       payId: payment.id.toString(),
@@ -30,18 +36,11 @@ describe("Delete payment history", () => {
   });
 
   it("deve rejeitar pagamento de outro admin", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const paymentHistoryRepository = new InMemoryPaymentHistoryRepository();
     const admin = MakeAdmin({ gymId: "gym-01" });
     const otherAdmin = MakeAdmin({ gymId: "gym-02" });
     const payment = MakePaymentHistory({ adminId: otherAdmin.id.toString() });
     await adminRepository.create(admin);
     await paymentHistoryRepository.create(payment);
-    const sut = new DeletePaymentHistoryUseCase(
-      paymentHistoryRepository,
-      adminRepository,
-    );
-
     const result = await sut.execute({
       Id: admin.id.toString(),
       payId: payment.id.toString(),
@@ -55,13 +54,6 @@ describe("Delete payment history", () => {
   });
 
   it("deve retornar erro quando admin ou pagamento não existem", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const paymentHistoryRepository = new InMemoryPaymentHistoryRepository();
-    const sut = new DeletePaymentHistoryUseCase(
-      paymentHistoryRepository,
-      adminRepository,
-    );
-
     const missingAdmin = await sut.execute({
       Id: "admin-inexistente",
       payId: "pay-01",

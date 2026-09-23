@@ -2,34 +2,45 @@ import { left, right, type Either } from "@/core/either";
 import type { adminRepository } from "../../../repository/admin-repository";
 import { NotFoundError } from "@/core/error/not-found-error";
 import { Client } from "@/domain/enterprise/client-entity";
-import type { clientRepository } from "../../../repository/user-repository";
-import type { paymentHistoryRepository } from "../../../repository/payment-history-repository";
+import type {
+  clientRepository,
+  FindClientsWithPaymentStatusParams,
+} from "../../../repository/user-repository";
 
 interface GetClientRequest {
   Id: string;
   page?: number;
+  perPage?: number;
   name?: string;
-  status?: string;
+  email?: string;
+  city?: string;
+  cep?: number;
+  cellphone?: number;
+  cpf?: number;
+  status?: "paid" | "not-paid";
   dateInitial: Date;
   dateFinal: Date;
 }
 
-type GetClientResponse = Either<
-  NotFoundError,
-  { clientPayedStatus: Client[] | null; clientNotPayedStatus: Client[] | null }
->;
+type GetClientResponse = Either<NotFoundError, Client[]>;
 
 export class GetClientUseCase {
   constructor(
     public adminRepository: adminRepository,
-    public paymentHistoryRepository: paymentHistoryRepository,
     public clientRepository: clientRepository,
   ) {}
+
   async execute({
     Id,
-    page,
-    status,
+    page = 1,
+    perPage = 20,
     name,
+    email,
+    city,
+    cep,
+    cellphone,
+    cpf,
+    status,
     dateInitial,
     dateFinal,
   }: GetClientRequest): Promise<GetClientResponse> {
@@ -39,39 +50,24 @@ export class GetClientUseCase {
       return left(new NotFoundError("Admin not found"));
     }
 
-    //return payments doned
-    const payDoneForClients =
-      await this.paymentHistoryRepository.findClientsByGymIdAndDate(
-        admin.id.toString(),
-        dateInitial,
-        dateFinal,
-      );
+    const params: FindClientsWithPaymentStatusParams = {
+      gymId: admin.gymId,
+      dateInitial,
+      dateFinal,
+      page,
+      perPage,
+      ...(name !== undefined && { name }),
+      ...(email !== undefined && { email }),
+      ...(city !== undefined && { city }),
+      ...(cep !== undefined && { cep }),
+      ...(cellphone !== undefined && { cellphone }),
+      ...(cpf !== undefined && { cpf }),
+      ...(status !== undefined && { status }),
+    };
 
-    if (!payDoneForClients) {
-      return left(new NotFoundError("payments not founds"));
-    }
+    const result =
+      await this.clientRepository.findClientsWithPaymentStatus(params);
 
-    const data = payDoneForClients.map((item) => item.userId);
-
-    //return clients that payed
-    const clientPayed = await this.clientRepository.findByIds(data);
-
-    //mutate status from client
-    const clientPayedStatus = await this.clientRepository.clientPayStatus(
-      clientPayed,
-      "paid",
-    );
-
-    //return clients that not payed
-    const clientNotPayed =
-      await this.clientRepository.findByIdsContraries(data);
-
-    //mutate status from client
-    const clientNotPayedStatus = await this.clientRepository.clientPayStatus(
-      clientNotPayed,
-      "not-paid",
-    );
-
-    return right({ clientPayedStatus, clientNotPayedStatus });
+    return right(result);
   }
 }

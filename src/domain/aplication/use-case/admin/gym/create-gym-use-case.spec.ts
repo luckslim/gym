@@ -5,17 +5,22 @@ import { InMemoryAdminRepository } from "../../../../../../test/in-memory-reposi
 import { InMemoryGymRepository } from "../../../../../../test/in-memory-repository/in-memory-gym-repository";
 import { CreateGymUseCase } from "./create-gym-use-case";
 
+let adminRepository: InMemoryAdminRepository;
+let gymRepository: InMemoryGymRepository;
+let hashGenerator: FakeHashGenerator;
+let sut: CreateGymUseCase;
+
 describe("Create gym", () => {
+  beforeEach(() => {
+    adminRepository = new InMemoryAdminRepository();
+    gymRepository = new InMemoryGymRepository();
+    hashGenerator = new FakeHashGenerator();
+    sut = new CreateGymUseCase(gymRepository, adminRepository, hashGenerator);
+  });
+
   it("deve criar uma academia e vincula-la ao admin", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const gymRepository = new InMemoryGymRepository();
     const admin = MakeAdmin({ gymId: "sem-academia" });
     await adminRepository.create(admin);
-    const sut = new CreateGymUseCase(
-      gymRepository,
-      adminRepository,
-      new FakeHashGenerator(),
-    );
 
     const result = await sut.execute({ Id: admin.id.toString() });
 
@@ -32,14 +37,6 @@ describe("Create gym", () => {
   });
 
   it("deve rejeitar a criação quando o admin não existe", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const gymRepository = new InMemoryGymRepository();
-    const sut = new CreateGymUseCase(
-      gymRepository,
-      adminRepository,
-      new FakeHashGenerator(),
-    );
-
     const result = await sut.execute({ Id: "admin-inexistente" });
 
     expect(result.isLeft()).toBe(true);

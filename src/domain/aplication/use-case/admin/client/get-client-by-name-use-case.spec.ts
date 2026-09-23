@@ -8,25 +8,24 @@ import { InMemoryClientRepository } from "../../../../../../test/in-memory-repos
 import { InMemoryGymRepository } from "../../../../../../test/in-memory-repository/in-memory-gym-repository";
 import { GetClientByNameUseCase } from "./get-client-by-name-use-case";
 
-function makeSut() {
-  const adminRepository = new InMemoryAdminRepository();
-  const clientRepository = new InMemoryClientRepository();
-  const gymRepository = new InMemoryGymRepository();
-  return {
-    sut: new GetClientByNameUseCase(
+let adminRepository: InMemoryAdminRepository;
+let clientRepository: InMemoryClientRepository;
+let gymRepository: InMemoryGymRepository;
+let sut: GetClientByNameUseCase;
+
+describe("Get client by name", () => {
+  beforeEach(() => {
+    adminRepository = new InMemoryAdminRepository();
+    clientRepository = new InMemoryClientRepository();
+    gymRepository = new InMemoryGymRepository();
+    sut = new GetClientByNameUseCase(
       adminRepository,
       clientRepository,
       gymRepository,
-    ),
-    adminRepository,
-    clientRepository,
-    gymRepository,
-  };
-}
+    );
+  });
 
-describe("Get client by name", () => {
   it("deve retornar cliente da academia do admin", async () => {
-    const { sut, adminRepository, clientRepository, gymRepository } = makeSut();
     const admin = MakeAdmin({ gymId: "gym-placeholder" });
     const gym = MakeGym({ adminId: admin.id.toString() });
     const client = MakeClient({
@@ -45,7 +44,6 @@ describe("Get client by name", () => {
   });
 
   it("deve rejeitar admin inexistente", async () => {
-    const { sut } = makeSut();
     const result = await sut.execute({
       Id: "admin-inexistente",
       name: "Maria",
@@ -54,7 +52,6 @@ describe("Get client by name", () => {
   });
 
   it("deve rejeitar cliente de outra academia", async () => {
-    const { sut, adminRepository, clientRepository, gymRepository } = makeSut();
     const admin = MakeAdmin({ gymId: "gym-placeholder" });
     const gym = MakeGym({ adminId: admin.id.toString() });
     const client = MakeClient({ name: "Maria Silva", gymId: "outra-academia" });
@@ -69,7 +66,6 @@ describe("Get client by name", () => {
   });
 
   it("deve retornar erro quando o cliente não existe", async () => {
-    const { sut, adminRepository, gymRepository } = makeSut();
     const admin = MakeAdmin({ gymId: "gym-placeholder" });
     await adminRepository.create(admin);
     await gymRepository.create(MakeGym({ adminId: admin.id.toString() }));

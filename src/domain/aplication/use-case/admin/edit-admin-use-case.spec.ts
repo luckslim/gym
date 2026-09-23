@@ -4,12 +4,20 @@ import { FakeHashGenerator } from "../../../../../test/cryptography/fake-hash-ge
 import { InMemoryAdminRepository } from "../../../../../test/in-memory-repository/in-memory-admin-repository";
 import { EditAdminUseCase } from "./edit-admin-use-case";
 
+let adminRepository: InMemoryAdminRepository;
+let hashGenerator: FakeHashGenerator;
+let sut: EditAdminUseCase;
+
 describe("Edit admin", () => {
+  beforeEach(() => {
+    adminRepository = new InMemoryAdminRepository();
+    hashGenerator = new FakeHashGenerator();
+    sut = new EditAdminUseCase(adminRepository, hashGenerator);
+  });
+
   it("deve atualizar os dados do admin e gerar novo hash", async () => {
-    const adminRepository = new InMemoryAdminRepository();
     const admin = MakeAdmin({ password: "senha-antiga" });
     await adminRepository.create(admin);
-    const sut = new EditAdminUseCase(adminRepository, new FakeHashGenerator());
 
     const result = await sut.execute({
       Id: admin.id.toString(),
@@ -38,8 +46,6 @@ describe("Edit admin", () => {
   });
 
   it("deve rejeitar admin inexistente", async () => {
-    const adminRepository = new InMemoryAdminRepository();
-    const sut = new EditAdminUseCase(adminRepository, new FakeHashGenerator());
     const result = await sut.execute({
       Id: "admin-inexistente",
       urlImage: "image.png",
