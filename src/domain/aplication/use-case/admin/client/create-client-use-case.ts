@@ -1,5 +1,5 @@
 import { left, right, type Either } from "@/core/either";
-import type { EmailAlreadyExistError } from "@/core/error/email-already-exist-error";
+import { EmailAlreadyExistError } from "@/core/error/email-already-exist-error";
 import { NotAllowedError } from "@/core/error/not-allowed-error";
 import type { clientRepository } from "../../../repository/user-repository";
 import type { adminRepository } from "../../../repository/admin-repository";
@@ -44,6 +44,13 @@ export class CreateClientUseCase {
     if (!admin) {
       return left(new NotFoundError("Admin not found"));
     }
+
+    const userAlreadyExist = await this.clientRepository.findByEmail(email)
+
+    if (!userAlreadyExist) {
+      return left(new EmailAlreadyExistError(""));
+    }
+
 
     const passwordHashed = await this.hashGenerator.hash(password);
 

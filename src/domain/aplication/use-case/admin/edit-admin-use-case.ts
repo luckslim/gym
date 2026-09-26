@@ -11,6 +11,9 @@ interface EditAdminRequest {
   password: string;
   city: string;
   cep: number;
+  street: string;
+  state: string;
+  number: number;
   cellphone: number;
   cpf: number;
 }
@@ -30,6 +33,9 @@ export class EditAdminUseCase {
     password,
     city,
     cep,
+    street,
+    state,
+    number,
     cellphone,
     cpf,
   }: EditAdminRequest): Promise<EditAdminResponse> {
@@ -55,7 +61,10 @@ export class EditAdminUseCase {
     admin.cellphone = cellphone;
     admin.cpf = cpf;
     admin.urlImage = urlImage;
-
+    admin.state = state;
+    admin.street = street;
+    admin.number = number;
+    
     await this.adminRepository.save(admin);
 
     return right({ message: "Admin edited successfully" });
